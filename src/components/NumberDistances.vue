@@ -1,58 +1,60 @@
 <template>
-    <div class="container">
-        <div class="number-inputs">
-            <div 
-                class="number-inputs__input" 
-                v-for="(number, letter) in numbers"
-                :key="'number-input__' + letter">
+  <div class="container">
+  
+    <vs-alert :active="hasErrors" color="danger" icon="new_releases" >
+      <span v-html="errorMessage"></span>
+    </vs-alert>
+    <div class="number-inputs">
+      <div 
+        class="number-inputs__input" 
+        v-for="(number, letter) in numbers"
+        :key="'number-input__' + letter">
 
-                <span>{{ letter.toUpperCase() }}</span>
-                <vs-input-number 
-                    v-model="number.lower"
-                    :max="number.mid"
-                    :min="-1000000"
-                    :color="colors[letter]"/>
-                <vs-input-number 
-                    v-model="number.mid"
-                    :min="number.lower"
-                    :max="number.upper"
-                    :color="colors[letter]"/>
-                <vs-input-number 
-                    v-model="number.upper"
-                    :min="number.mid"
-                    :color="colors[letter]"/>
-
-            </div>
-            <div class="step">
-                <vs-button 
-                    vs-type="gradient" 
-                    color="success"
-                    @click="calculateDistances">
-                    Caclulate
-                </vs-button>
-                <vs-tooltip text="Input steps to calculate distance">
-                    <vs-input-number 
-                        v-model="n" 
-                        :min="-100000"/>
-                </vs-tooltip>
-            </div>
-            <div class="results">
-              <vs-chip color="primary">
-                <vs-avatar icon="timeline" />{{ step.toFixed(5) }}
-              </vs-chip>
-              <vs-chip v-if="showResults" color="primary">
-                <vs-avatar text="H" />{{ distanceHamming }}
-              </vs-chip>
-              <vs-chip v-if="showResults" color="primary">
-                <vs-avatar text="E" />{{ distanceEuclide }}
-              </vs-chip>
-            </div>
-        </div>
-
-        <div class="chart">
-            <canvas id="distance-chart"></canvas>
-        </div>
+        <span>{{ letter.toUpperCase() }}</span>
+        <vs-input-number 
+          v-model="number.lower"
+          :max="number.mid"
+          :min="-1000000"
+          :color="colors[letter]"/>
+        <vs-input-number 
+          v-model="number.mid"
+          :min="number.lower"
+          :max="number.upper"
+          :color="colors[letter]"/>
+        <vs-input-number 
+          v-model="number.upper"
+          :min="number.mid"
+          :color="colors[letter]"/>
+      </div>
+      <div class="step">
+        <vs-button 
+          vs-type="gradient" 
+          color="success"
+          @click="calculateDistances">
+          Caclulate
+        </vs-button>
+        <vs-tooltip text="Input steps to calculate distance">
+          <vs-input-number 
+            v-model="n" 
+            :min="-100000"/>
+        </vs-tooltip>
+      </div>
+      <div class="results">
+        <vs-chip color="primary">
+          <vs-avatar icon="timeline" />{{ step.toFixed(5) }}
+        </vs-chip>
+        <vs-chip v-if="showResults" color="primary">
+          <vs-avatar text="H" />{{ distanceHamming }}
+        </vs-chip>
+        <vs-chip v-if="showResults" color="primary">
+          <vs-avatar text="E" />{{ distanceEuclide }}
+        </vs-chip>
+      </div>
     </div>
+    <div class="chart">
+      <canvas id="distance-chart"></canvas>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -75,7 +77,8 @@ export default {
       },
       showResults: false,
       distanceHamming: 0,
-      distanceEuclide: 0
+      distanceEuclide: 0,
+      hasErrors: false
     };
   },
   methods: {
@@ -199,6 +202,22 @@ export default {
   watch: {
     numbers: {
       handler(nV, oV) {
+        for (let letter in this.numbers) {
+          if (!this.numbers[letter].isValid()) {
+            this.hasErrors = true;
+            this.errorMessage = `
+              Triangle number <strong>${letter.toUpperCase()}</strong> is invalid!
+            `;
+            return;
+          }
+        }
+
+        this.hasErrors = false;
+
+        this.chart.options.scales.xAxes[0].ticks = {
+          min: this.minX - 1,
+          max: this.maxX + 1
+        };
         this.chart.data.datasets = this.buildDatasets();
         this.chart.update();
       },
