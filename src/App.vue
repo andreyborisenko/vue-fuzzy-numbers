@@ -88,8 +88,8 @@ export default {
   data() {
     return {
       numbers: {
-        a: new TriangleNumber(2, 3, 4),
-        b: new TriangleNumber(-2, 1, 7)
+        a: new TriangleNumber(-3, -2, 3),
+        b: new TriangleNumber(2, 4, 6)
       },
       hasErrors: false,
       errorMessage: "",
@@ -272,7 +272,7 @@ body {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
 
   margin-bottom: 20px;
 }
@@ -297,6 +297,7 @@ body {
 .action-buttons {
   display: flex;
   flex-flow: row;
+  justify-content: center;
 }
 
 .action-buttons .vs-button {
@@ -315,6 +316,7 @@ body {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
+  align-items: center;
   margin: 20px 0;
 }
 
@@ -342,6 +344,9 @@ body {
 
 .chart {
   margin-top: 20px;
+  max-width: 1000px;
+  max-height: 500px;
+  min-height: 350px;
 }
 
 @media (max-width: 768px) {

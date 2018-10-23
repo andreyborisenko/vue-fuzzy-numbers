@@ -5,18 +5,6 @@ import {
 } from "./TriangleNumber.js";
 
 export default class CalculatorHelper {
-  static calculateWithAlpha(o, alpha) {
-    if (!o.expression) throw new Error("Object doesn't have expression!");
-
-    const alphaValue = o.alpha * alpha;
-
-    const result = eval(
-      o.expression.replace("alpha", alphaValue).replace("constant", o.constant)
-    );
-
-    return result;
-  }
-
   static sumIntervals(a, b) {
     if (a.length !== 2 || b.length !== 2) throw new Error("Wrong data passed!");
 
