@@ -44,8 +44,6 @@ export default class CalculatorHelper {
     const up = interval[1].constant;
     const mid = interval[1].constant - interval[1].alpha;
 
-    console.log(low, mid, up);
-
     return new TriangleNumber(low, mid, up);
   }
 }

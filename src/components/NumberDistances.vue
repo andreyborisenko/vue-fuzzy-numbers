@@ -78,6 +78,7 @@ export default {
       showResults: false,
       distanceHamming: 0,
       distanceEuclide: 0,
+      errorMessage: "",
       hasErrors: false
     };
   },

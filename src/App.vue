@@ -4,6 +4,9 @@
       <vs-tab vs-label="Lab 7">
         <number-distances />
       </vs-tab>
+      <vs-tab vs-label="Lab 5">
+        <different-functions />
+      </vs-tab>
       <vs-tab vs-label="Lab 3-4">
         <two-numbers-sum-diff />
       </vs-tab>
@@ -14,12 +17,14 @@
 <script>
 import TwoNumbersSumDiff from "@/components/TwoNumbersSumDiff";
 import NumberDistances from "@/components/NumberDistances";
+import DifferentFunctions from "@/components/DifferentFunctions";
 
 export default {
   name: "app",
   components: {
     TwoNumbersSumDiff,
-    NumberDistances
+    NumberDistances,
+    DifferentFunctions
   },
   data() {
     return {};
