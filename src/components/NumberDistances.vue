@@ -4,27 +4,35 @@
     <vs-alert :active="hasErrors" color="danger" icon="new_releases" >
       <span v-html="errorMessage"></span>
     </vs-alert>
+
     <div class="number-inputs">
       <div 
-        class="number-inputs__input" 
+        class="number-inputs__group" 
         v-for="(number, letter) in numbers"
         :key="'number-input__' + letter">
 
-        <span>{{ letter.toUpperCase() }}</span>
-        <vs-input-number 
-          v-model="number.lower"
-          :max="number.mid"
-          :min="-1000000"
-          :color="colors[letter]"/>
-        <vs-input-number 
-          v-model="number.mid"
-          :min="number.lower"
-          :max="number.upper"
-          :color="colors[letter]"/>
-        <vs-input-number 
-          v-model="number.upper"
-          :min="number.mid"
-          :color="colors[letter]"/>
+        <div class="number-inputs__info">
+          <span>{{ letter.toUpperCase() }}</span>
+          <vs-select
+            v-model="types[letter]"
+            label="Function type"
+            :color="colors[letter]">
+
+            <vs-select-item 
+              v-for="(item, index) in classes"
+              :key="letter + '__' + index"
+              :text="index"
+              :value="index"
+            />
+          </vs-select>
+
+        </div>
+
+        <function-input 
+          v-model="numbers[letter]"
+          :color="colors[letter]"
+          class="number-inputs__input"
+        />
       </div>
       <div class="step">
         <vs-button 
@@ -58,16 +66,29 @@
 </template>
 
 <script>
-import TriangleNumber from "@/classes/TriangleNumber.js";
+import FunctionInput from "./FunctionInput";
+import {
+  GaussFunctionNumber,
+  TrapeziumFunctionNumber,
+  TwoFunctionsMult,
+  TriangleNumber
+} from "@/classes";
 import Chart from "chart.js";
 
 export default {
   name: "number-distances",
+  components: {
+    FunctionInput
+  },
   data() {
     return {
       numbers: {
         a: new TriangleNumber(2, 4, 5),
         b: new TriangleNumber(1, 3, 6)
+      },
+      types: {
+        a: "triangle",
+        b: "triangle"
       },
       n: 500,
       chart: null,
@@ -79,7 +100,19 @@ export default {
       distanceHamming: 0,
       distanceEuclide: 0,
       errorMessage: "",
-      hasErrors: false
+      hasErrors: false,
+      classes: {
+        gauss: GaussFunctionNumber,
+        trapezium: TrapeziumFunctionNumber,
+        mult: TwoFunctionsMult,
+        triangle: TriangleNumber
+      },
+      defaults: {
+        trapezium: [-4, 2, 8, 14],
+        gauss: [5, 0.5],
+        mult: [-8, 14, 2, 9],
+        triangle: [2, 4, 5]
+      }
     };
   },
   methods: {
@@ -171,26 +204,14 @@ export default {
       let datasets = [];
 
       for (let letter in this.numbers) {
-        datasets.push({
-          label: letter.toUpperCase(),
-          data: [
+        datasets.push(
+          Object.assign(
+            this.numbers[letter].getChartData(this.step, this.minX, this.maxX),
             {
-              x: this.numbers[letter].lower,
-              y: 0
-            },
-            {
-              x: this.numbers[letter].mid,
-              y: 1
-            },
-            {
-              x: this.numbers[letter].upper,
-              y: 0
+              borderColor: this.colors[letter]
             }
-          ],
-          fill: false,
-          lineTension: 0,
-          borderColor: this.colors[letter]
-        });
+          )
+        );
       }
 
       if (withDistance) {
@@ -207,7 +228,9 @@ export default {
           if (!this.numbers[letter].isValid()) {
             this.hasErrors = true;
             this.errorMessage = `
-              Triangle number <strong>${letter.toUpperCase()}</strong> is invalid!
+              ${
+                this.types[letter]
+              } number <strong>${letter.toUpperCase()}</strong> is invalid!
             `;
             return;
           }
@@ -221,6 +244,18 @@ export default {
         };
         this.chart.data.datasets = this.buildDatasets();
         this.chart.update();
+
+        console.log("here");
+      },
+      deep: true
+    },
+    types: {
+      handler(nV, oV) {
+        for (const letter in nV) {
+          this.numbers[letter] = new this.classes[nV[letter]](
+            ...this.defaults[nV[letter]]
+          );
+        }
       },
       deep: true
     }
@@ -230,10 +265,10 @@ export default {
       return (this.maxX - this.minX) / this.n;
     },
     minX() {
-      return Math.min(this.numbers.a.lower, this.numbers.b.lower);
+      return Math.min(this.numbers.a.minX, this.numbers.b.minX);
     },
     maxX() {
-      return Math.max(this.numbers.a.upper, this.numbers.b.upper);
+      return Math.max(this.numbers.a.maxX, this.numbers.b.maxX);
     }
   },
   mounted() {
@@ -279,13 +314,39 @@ export default {
   margin-bottom: 20px;
 }
 
+.number-inputs__group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+
+  margin: 10px 0;
+}
+
+.number-inputs__info {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: flex-end;
+
+  margin-bottom: 10px;
+}
+
+.number-inputs__info > span {
+  font-size: 30px;
+  margin-right: 20px;
+
+  position: relative;
+  bottom: -5px;
+}
+
 .number-inputs__input {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
 }
 
-.number-inputs__input span {
+.number-inputs__input > span {
   font-size: 25px;
   padding-right: 10px;
 }

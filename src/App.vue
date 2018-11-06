@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <vs-tabs vs-position="top">
-      <vs-tab vs-label="Lab 7">
+      <vs-tab vs-label="Distance">
         <number-distances />
       </vs-tab>
-      <vs-tab vs-label="Lab 5">
+      <vs-tab vs-label="Different functions">
         <different-functions />
       </vs-tab>
-      <vs-tab vs-label="Lab 3-4">
+      <vs-tab vs-label="Add / substract">
         <two-numbers-sum-diff />
       </vs-tab>
     </vs-tabs>
@@ -39,5 +39,16 @@ body {
 
 .container {
   padding: 20px;
+}
+
+.chart {
+  max-width: 900px;
+  margin: 0 auto;
+  max-height: 500px;
+  min-height: 350px;
+}
+
+.chart canvas {
+  max-width: 100% !important;
 }
 </style>

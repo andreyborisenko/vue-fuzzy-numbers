@@ -1,5 +1,5 @@
 {
-  "name": "triangle-numbers-operations",
+  "name": "fuzzy-numbers-operations",
   "version": "1.0.0",
   "description": "I hope you`ll like it :)",
   "main": "src/main.js",
@@ -16,7 +16,7 @@
     "chart.js": "2.7.3",
     "material-icons": "0.2.3",
     "vue": "^2.5.2",
-    "vuesax": "3.5.6"
+    "vuesax": "3.6.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -78,8 +78,5 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "keywords": [
-    "university",
-    "fuzzy-logic"
-  ]
+  "keywords": []
 }

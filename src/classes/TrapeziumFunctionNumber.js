@@ -1,7 +1,11 @@
-export default class TrapeziumFunctionNumber {
+import FuzzyFunction from "./FuzzyFunction";
+
+export default class TrapeziumFunctionNumber extends FuzzyFunction {
   constructor(...params) {
     if (params.length < 4 || params.filter(x => x == undefined).length)
       throw new Error("Wrong data passed!");
+
+    super();
 
     const [a, b, c, d] = params.map(Number);
 
@@ -29,24 +33,40 @@ export default class TrapeziumFunctionNumber {
     return 0;
   }
 
-  getChartData(step, min, max) {
-    let data = [];
-
-    for (let i = min; i <= max; i += step) {
-      data.push({
-        x: i,
-        y: this.calculateMembershipFunction(i)
-      });
-    }
-
+  getChartData() {
     return {
       label: "Trapezium function",
-      data,
+      data: [
+        {
+          x: this.a,
+          y: 0
+        },
+        {
+          x: this.b,
+          y: 1
+        },
+        {
+          x: this.c,
+          y: 1
+        },
+        {
+          x: this.d,
+          y: 0
+        }
+      ],
       fill: false,
-      lineTension: 0.3,
+      lineTension: 0,
       pointRadius: 0,
       hitRadius: 10,
       borderColor: "#10ac84"
     };
+  }
+
+  get minX() {
+    return this.a;
+  }
+
+  get maxX() {
+    return this.d;
   }
 }

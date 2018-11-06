@@ -1,7 +1,9 @@
+import FuzzyFunction from "./FuzzyFunction";
+
 const INTERVAL_EXPR_LB = "alpha + constant";
 const INTERVAL_EXPR_UB = "constant - alpha";
 
-export default class TriangleNumber {
+export default class TriangleNumber extends FuzzyFunction {
   set lower(value) {
     this._lower = Number(value);
   }
@@ -33,6 +35,9 @@ export default class TriangleNumber {
       b > c
     )
       throw new Error("Wrong data passed");
+
+    super();
+
     this.lower = a;
     this.mid = b;
     this.upper = c;
@@ -65,6 +70,36 @@ export default class TriangleNumber {
         expression: INTERVAL_EXPR_UB
       }
     ];
+  }
+
+  getChartData(step, min, max) {
+    return {
+      label: "Triangle Number",
+      data: [
+        {
+          x: this.lower,
+          y: 0
+        },
+        {
+          x: this.mid,
+          y: 1
+        },
+        {
+          x: this.upper,
+          y: 0
+        }
+      ],
+      fill: false,
+      lineTension: 0
+    };
+  }
+
+  get minX() {
+    return this.lower;
+  }
+
+  get maxX() {
+    return this.upper;
   }
 }
 

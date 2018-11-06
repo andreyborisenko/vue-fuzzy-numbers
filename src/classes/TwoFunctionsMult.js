@@ -1,5 +1,8 @@
-export default class TwoFunctionsMult {
+import FuzzyFunction from "./FuzzyFunction";
+
+export default class TwoFunctionsMult extends FuzzyFunction {
   constructor(a1, c1, a2, c2) {
+    super();
     // if (a1 > c1 || a2 >= c2) throw new Error("Wrong data passed!");
 
     this.a1 = Number(a1);
@@ -8,7 +11,9 @@ export default class TwoFunctionsMult {
     this.c2 = Number(c2);
   }
 
-  isValid() {}
+  isValid() {
+    return true;
+  }
 
   calculateMembershipFunction(x) {
     return (
@@ -36,5 +41,33 @@ export default class TwoFunctionsMult {
       hitRadius: 10,
       borderColor: "#ff6b6b"
     };
+  }
+
+  get minX() {
+    const diff = 1e-5;
+    let step = 0.1,
+      value = this.calculateMembershipFunction(this.c2),
+      min = this.c2;
+
+    while (value > diff) {
+      min -= step;
+      value = this.calculateMembershipFunction(min);
+    }
+
+    return min;
+  }
+
+  get maxX() {
+    const diff = 1e-5;
+    let step = 0.1,
+      value = this.calculateMembershipFunction(this.c1),
+      max = this.c1;
+
+    while (value > diff) {
+      max += step;
+      value = this.calculateMembershipFunction(max);
+    }
+
+    return max;
   }
 }

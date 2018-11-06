@@ -1,4 +1,6 @@
-export default class GaussFunctionNubmer {
+import FuzzyFunction from "./FuzzyFunction";
+
+export default class GaussFunctionNubmer extends FuzzyFunction {
   set b(value) {
     this._b = Number(value);
   }
@@ -17,12 +19,15 @@ export default class GaussFunctionNubmer {
     // if ((b !== 0 && !b) || (c !== 0 && !c) || b >= c)
     //   throw new Error("Wrong data passed!");
 
+    super();
+
     this.b = b;
     this.c = c;
   }
 
   isValid() {
-    return this.b < this.c;
+    // return this.b < this.c;
+    return true;
   }
 
   calculateMembershipFunction(x) {
@@ -48,5 +53,33 @@ export default class GaussFunctionNubmer {
       hitRadius: 10,
       borderColor: "#5f27cd"
     };
+  }
+
+  get minX() {
+    const diff = 1e-5;
+    let step = 0.1,
+      value = this.calculateMembershipFunction(this.b),
+      min = this.b;
+
+    while (value > diff) {
+      min -= step;
+      value = this.calculateMembershipFunction(min);
+    }
+
+    return min;
+  }
+
+  get maxX() {
+    const diff = 1e-5;
+    let step = 0.1,
+      value = this.calculateMembershipFunction(this.b),
+      max = this.b;
+
+    while (value > diff) {
+      max += step;
+      value = this.calculateMembershipFunction(max);
+    }
+
+    return max;
   }
 }

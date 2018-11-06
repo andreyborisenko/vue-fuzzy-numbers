@@ -6,7 +6,7 @@
         v-model="steps" 
         type="number"
         color="warning"
-        vs-label-placeholder="Steps"
+        label-placeholder="Steps"
       />
       
       <vs-input 
@@ -15,7 +15,8 @@
         color="warning"
         :min="-100000"
         :max="maxX"
-        vs-label-placeholder="Minimum X"
+        disabled
+        label-placeholder="Minimum X"
       />
       
       <vs-input 
@@ -23,7 +24,8 @@
         type="number"
         color="warning"
         :min="minX"
-        vs-label-placeholder="Maximum X"
+        disabled
+        label-placeholder="Maximum X"
       />
     </div>
     <vs-divider color="warning">Functions</vs-divider>
@@ -35,56 +37,18 @@
           <vs-chip color="warning" vs-size="large">C</vs-chip>
           <vs-chip color="warning" vs-size="large">D</vs-chip>
         </div>
-        <div class="function__inputs">
-          <vs-input-number
-            v-model="numbers.trapezium.a"
-            :max="numbers.trapezium.b"
-            :min="-100000"
-            color="warning">
-          </vs-input-number>
-
-          <vs-input-number
-            v-model="numbers.trapezium.b"
-            :min="numbers.trapezium.a"
-            :max="numbers.trapezium.c"
-            color="warning">
-          </vs-input-number>
-          
-          <vs-input-number
-            v-model="numbers.trapezium.c"
-            :min="numbers.trapezium.b"
-            :max="numbers.trapezium.d"
-            color="warning">
-          </vs-input-number>
-          
-          <vs-input-number
-            v-model="numbers.trapezium.d"
-            :min="numbers.trapezium.b + 1"
-            color="warning">
-          </vs-input-number>
-        </div>
+        <function-input 
+          v-model="numbers.trapezium"
+          color="warning"
+          class="function__inputs"
+        />
       </vs-tab>
       <vs-tab vs-label="Gauss (#3)">
-        <div class="function__inputs">
-          <vs-input 
-            v-model="numbers.gauss.b"
-            type="number"
-            :max="numbers.gauss.c - 1"
-            :min="-100000"
-            color="warning"
-            vs-label-placeholder="Gauss B"
-            vs-size="large"
-          />
-          
-          <vs-input 
-            type="number"
-            v-model="numbers.gauss.c"
-            :min="numbers.gauss.b + 1"
-            color="warning"
-            vs-label-placeholder="Gauss C"
-            vs-size="large"
-          />
-        </div>
+        <function-input 
+          v-model="numbers.gauss"
+          color="warning"
+          class="function__inputs"
+        />
       </vs-tab>
       <vs-tab vs-label="Multiply (#7)">
         <div class="function__inputs">
@@ -93,33 +57,11 @@
           <vs-chip color="warning" vs-size="large">A2</vs-chip>
           <vs-chip color="warning" vs-size="large">C2</vs-chip>
         </div>
-        <div class="function__inputs">
-          <vs-input-number
-            v-model="numbers.mult.a1"
-            :max="numbers.mult.c1"
-            :min="-100000"
-            color="warning">
-          </vs-input-number>
-
-          <vs-input-number
-            v-model="numbers.mult.c1"
-            :min="numbers.mult.a1"
-            color="warning">
-          </vs-input-number>
-          
-          <vs-input-number
-            v-model="numbers.mult.a2"
-            :min="-100000"
-            :max="numbers.mult.c2"
-            color="warning">
-          </vs-input-number>
-          
-          <vs-input-number
-            v-model="numbers.mult.c2"
-            :min="numbers.mult.a2"
-            color="warning">
-          </vs-input-number>
-        </div>
+        <function-input 
+          v-model="numbers.mult"
+          color="warning"
+          class="function__inputs"
+        />
       </vs-tab>
       <vs-tab vs-label="Show both">
       </vs-tab>
@@ -132,13 +74,19 @@
 </template>
 
 <script>
-import GaussFunctionNumber from "@/classes/GaussFunctionNumber";
-import TrapeziumFunctionNumber from "@/classes/TrapeziumFunctionNumber";
-import TwoFunctionsMult from "@/classes/TwoFunctionsMult";
+import {
+  GaussFunctionNumber,
+  TrapeziumFunctionNumber,
+  TwoFunctionsMult
+} from "@/classes";
+import FunctionInput from "./FunctionInput";
 import Chart from "chart.js";
 
 export default {
   name: "different-functions",
+  components: {
+    FunctionInput
+  },
   data() {
     return {
       steps: 100,
@@ -157,20 +105,32 @@ export default {
     changeChartData() {
       const numberKey = Object.keys(this.numbers)[this.activeNumber];
 
-      this.minX = Number(this.minX);
-      this.maxX = Number(this.maxX);
-      this.chart.options.scales.xAxes[0].ticks.max = Number(this.minX) - 2;
-      this.chart.options.scales.xAxes[0].ticks.min = Number(this.maxX) + 2;
-
       if (numberKey in this.numbers) {
+        this.minX = Number(this.numbers[numberKey].minX);
+        this.maxX = Number(this.numbers[numberKey].maxX);
         this.chart.data.datasets = [
-          this.numbers[numberKey].getChartData(this.step, this.minX, this.maxX)
+          this.numbers[numberKey].getChartData(
+            (this.numbers[numberKey].maxX - this.numbers[numberKey].minX) /
+              this.steps,
+            this.numbers[numberKey].minX,
+            this.numbers[numberKey].maxX
+          )
         ];
       } else {
         this.chart.data.datasets = Object.values(this.numbers).map(x =>
-          x.getChartData(this.step, this.minX, this.maxX)
+          x.getChartData((x.maxX - x.minX) / this.steps, x.minX, x.maxX)
+        );
+
+        this.minX = Number(
+          Math.min(...Object.values(this.numbers).map(x => x.minX))
+        );
+        this.maxX = Number(
+          Math.max(...Object.values(this.numbers).map(x => x.maxX))
         );
       }
+
+      this.chart.options.scales.xAxes[0].ticks.max = Number(this.minX) - 2;
+      this.chart.options.scales.xAxes[0].ticks.min = Number(this.maxX) + 2;
 
       this.chart.update();
     }
