@@ -244,8 +244,6 @@ export default {
         };
         this.chart.data.datasets = this.buildDatasets();
         this.chart.update();
-
-        console.log("here");
       },
       deep: true
     },
